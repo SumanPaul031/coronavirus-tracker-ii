@@ -1,0 +1,71 @@
+<header>
+    <div class="logo">
+      <img src="../assets/logo.png" alt="">
+      <p>COVID-19<br>STATS</p>
+    </div>
+    <nav>
+      <ul>
+        <li><a routerLink="/">HOME</a></li>
+        <li><a routerLink="/">ABOUT</a></li>
+      </ul>
+    </nav>
+</header>
+<main>
+    <div class="stats">
+        <div class="latest-report">
+            <div class="country">
+                <div class="name">
+                    <ng-template [ngIf]="loading">
+                        Loading...
+                    </ng-template>
+                    <ng-template [ngIf]="!loading">
+                        {{displayCountry}}
+                    </ng-template>
+                </div>
+                <div (click)="HideOrDisplay()" class="change-country">Change</div>
+                <div [class.hide]="hideToggle" class="search-country fadeIn">
+                    <div class="search-box">
+                        <input #countryFilter type="text" (keyup)="CountryFilter(countryFilter.value)" id="search-input" placeholder="Search Country...">
+                        <img class="close" src="../../../assets/close.svg" alt="" (click)="CloseSearch()">
+                    </div>
+                    <div #countryList class="country-list">
+                        <!-- <ul id="list-0">
+                            <li>UK</li>
+                        </ul>
+                        <ul id="list-1">
+                            <li>UK</li>
+                        </ul>
+                        <ul id="list-2">
+                            <li>UK</li>
+                        </ul> -->
+                    </div>
+                </div>
+            </div>
+            <div class="total-cases">
+                <div class="title">Total Cases</div>
+                <div class="value" id="totalCases">0</div>
+                <div class="new-value">+<span id="newCases">0</span></div>
+            </div>
+            <div class="recovered">
+                <div class="title">Recovered</div>
+                <div class="value" id="totalRecovered">0</div>
+                <div class="new-value">+<span id="newRecovered">0</span></div>
+            </div>
+            <div class="deaths">
+                <div class="title">Deaths</div>
+                <div class="value" id="totalDeaths">0</div>
+                <div class="new-value">+<span id="newDeaths">0</span></div>
+            </div>
+        </div>
+        <div class="chart">
+            <canvas id="canvas">{{my_chart}}</canvas>
+        </div>
+    </div>
+</main>
+<footer>
+    <div class="footer-container">
+        <div class="copyright">
+            <p>Copyright © 2020 Suman Paul</p>
+        </div>
+    </div>
+</footer>
