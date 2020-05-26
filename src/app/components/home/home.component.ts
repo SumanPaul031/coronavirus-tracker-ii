@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild, AfterViewInit, Renderer2, ElementRef } fr
 import { GetDataService } from 'src/app/services/get-data.service';
 import { Chart } from 'chart.js';
 import { CountUpOptions, CountUp } from 'countup.js';
+import { map } from 'rxjs/operators';
+import { DateWiseData } from 'src/app/models/datewise-data';
+import { merge } from 'rxjs';
 
 declare function geoplugin_countryCode(): any;
 
@@ -13,12 +16,12 @@ declare function geoplugin_countryCode(): any;
 export class HomeComponent implements OnInit, AfterViewInit {
 
   country_list = [
-    { name: 'USA', code: 'US' },
+    { name: 'US', code: 'US' },
     { name: 'Spain', code: 'ES' },
     { name: 'Italy', code: 'IT' },
     { name: 'France', code: 'FR' },
     { name: 'Germany', code: 'DE' },
-    { name: 'UK', code: 'GB' },
+    { name: 'United Kingdom', code: 'GB' },
     { name: 'Turkey', code: 'TR' },
     { name: 'Iran', code: 'IR' },
     { name: 'Russia', code: 'RU' },
@@ -44,7 +47,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'Mexico', code: 'MX' },
     { name: 'Denmark', code: 'DK' },
     { name: 'Norway', code: 'NO' },
-    { name: 'UAE', code: 'AE' },
+    { name: 'United Arab Emirates', code: 'AE' },
     { name: 'Czechia', code: 'CZ' },
     { name: 'Australia', code: 'AU' },
     { name: 'Singapore', code: 'SG' },
@@ -88,13 +91,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'North Macedonia', code: 'MK' },
     { name: 'Slovakia', code: 'SK' },
     { name: 'Cuba', code: 'CU' },
-    { name: 'Hong Kong', code: 'HK' },
     { name: 'Cameroon', code: 'CM' },
     { name: 'Afghanistan', code: 'AF' },
     { name: 'Bulgaria', code: 'BG' },
     { name: 'Tunisia', code: 'TN' },
     { name: 'Ghana', code: 'GH' },
-    { name: 'Ivory Coast', code: 'CI' },
     { name: 'Cyprus', code: 'CY' },
     { name: 'Djibouti', code: 'DJ' },
     { name: 'Latvia', code: 'LV' },
@@ -111,19 +112,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'Uruguay', code: 'UY' },
     { name: 'Honduras', code: 'HN' },
     { name: 'San Marino', code: 'SM' },
-    { name: 'Palestine', code: 'PS' },
     { name: 'Malta', code: 'MT' },
     { name: 'Taiwan', code: 'TW' },
     { name: 'Jordan', code: 'JO' },
-    { name: 'Réunion', code: 'RE' },
     { name: 'Georgia', code: 'GE' },
     { name: 'Senegal', code: 'SN' },
     { name: 'Mauritius', code: 'MU' },
-    { name: 'DRC', code: 'CD' },
     { name: 'Montenegro', code: 'ME' },
-    { name: 'Isle of Man', code: 'IM' },
     { name: 'Sri Lanka', code: 'LK' },
-    { name: 'Mayotte', code: 'YT' },
     { name: 'Kenya', code: 'KE' },
     { name: 'Vietnam', code: 'VN' },
     { name: 'Guatemala', code: 'GT' },
@@ -133,10 +129,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'El Salvador', code: 'SV' },
     { name: 'Jamaica', code: 'JM' },
     { name: 'Tanzania', code: 'TZ' },
-    { name: 'Martinique', code: 'MQ' },
     { name: 'Guadeloupe', code: 'GP' },
     { name: 'Rwanda', code: 'RW' },
-    { name: 'Congo', code: 'CG' },
+    { name: 'Congo (Kinshasa)', code: 'CG' },
     { name: 'Brunei', code: 'BN' },
     { name: 'Somalia', code: 'SO' },
     { name: 'Gibraltar', code: 'GI' },
@@ -159,19 +154,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'Guyana', code: 'GY' },
     { name: 'Zambia', code: 'ZM' },
     { name: 'Cabo Verde', code: 'CV' },
-    { name: 'Cayman Islands', code: 'KY' },
     { name: 'Bahamas', code: 'BS' },
-    { name: 'French Polynesia', code: 'PF' },
     { name: 'Uganda', code: 'UG' },
     { name: 'Maldives', code: 'MV' },
     { name: 'Libya', code: 'LY' },
     { name: 'Guinea-Bissau', code: 'GW' },
-    { name: 'Macao', code: 'MO' },
     { name: 'Haiti', code: 'HT' },
     { name: 'Syria', code: 'SY' },
     { name: 'Eritrea', code: 'ER' },
     { name: 'Mozambique', code: 'MZ' },
-    { name: 'Saint Martin', code: 'MF' },
     { name: 'Benin', code: 'BJ' },
     { name: 'Chad', code: 'TD' },
     { name: 'Mongolia', code: 'MN' },
@@ -184,7 +175,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'Botswana', code: 'BW' },
     { name: 'Timor-Leste', code: 'TL' },
     { name: 'Belize', code: 'BZ' },
-    { name: 'New Caledonia', code: 'NC' },
     { name: 'Malawi', code: 'MW' },
     { name: 'Fiji', code: 'FJ' },
     { name: 'Dominica', code: 'DM' },
@@ -192,37 +182,24 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { name: 'Saint Lucia', code: 'LC' },
     { name: 'Grenada', code: 'GD' },
     { name: 'Saint Kitts and Nevis', code: 'KN' },
-    { name: 'CAR', code: 'CF' },
-    { name: 'St. Vincent Grenadines', code: 'VC' },
-    { name: 'Turks and Caicos', code: 'TC' },
-    { name: 'Falkland Islands', code: 'FK' },
-    { name: 'Greenland', code: 'GL' },
-    { name: 'Montserrat', code: 'MS' },
+    { name: 'Central African Republic', code: 'CF' },
+    { name: 'Saint Vincent and the Grenadines', code: 'VC' },
     { name: 'Seychelles', code: 'SC' },
     { name: 'Suriname', code: 'SR' },
     { name: 'Nicaragua', code: 'NI' },
     { name: 'Gambia', code: 'GM' },
-    { name: 'Vatican City', code: 'VA' },
     { name: 'Mauritania', code: 'MR' },
     { name: 'Papua New Guinea', code: 'PG' },
-    { name: 'St. Barth', code: 'BL' },
     { name: 'Burundi', code: 'BI' },
     { name: 'Bhutan', code: 'BT' },
-    { name: 'Caribbean Netherlands', code: 'BQ' },
-    { name: 'British Virgin Islands', code: 'VG' },
     { name: 'Sao Tome and Principe', code: 'ST' },
     { name: 'South Sudan', code: 'SD' },
-    { name: 'Anguilla', code: 'AI' },
-    { name: 'Saint Pierre Miquelon', code: 'PM' },
     { name: 'Yemen', code: 'YE' },
     { name: 'China', code: 'CN' }
   ];
 
-  // search_country_element;
-  // country_list_element;
-  // change_country_btn;
-  // close_list_btn;
-  // input;
+  country_list1 = []
+
   num_ul_lists = 3;
   hideToggle: boolean = true;
   loading: boolean = true;
@@ -230,21 +207,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   totalCountryCases;
   totalCountryRecovered;
   totalCountryDeaths;
+  selectedCountry;
 
   newCountryCases;
   newCountryRecovered;
   newCountryDeaths;
 
-  // opts: CountUpOptions;
-
-  // country_name_element;
-  // total_cases_element;
-  // new_cases_element;
-  // recovered_element;
-  // new_recovered_element;
-  // deaths_element;
-  // new_deaths_element;
-  ctx;
   my_chart;
 
   app_data = [];
@@ -257,32 +225,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
   country_code;
   user_country;
 
+  casesData;
+  recoveredData;
+  deathsData;
+
   @ViewChild('countryList') country_list_element: ElementRef;
   @ViewChild('countryFilter') countryFilter: ElementRef;
 
   constructor(private renderer: Renderer2, private dataSvc: GetDataService) {}
 
   ngOnInit(): void {
-    // this.createCountryList();
-
-    // this.country_code = geoplugin_countryCode();
-    // this.country_list.forEach(country => {
-    //   if(country.code == this.country_code){
-    //     this.user_country = country.name;
-    //   }
-    // });
-
-    // this.fetchData(this.user_country);
-    // this.dataSvc.getCurrentCountry();
   }
 
   ngAfterViewInit(): void{
-    // this.opts = {
-    //   decimalPlaces: 2,
-    //   separator: ':',
-    //   duration: 5
-    // };
-
     this.createCountryList();
 
     // this.country_code = geoplugin_countryCode();
@@ -292,8 +247,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
     //   }
     // });
 
-    // this.fetchData(this.user_country);
-    this.fetchData('India');
+    merge(
+      this.dataSvc.getCasesData().pipe(map(result1 => {
+        this.casesData = result1;
+      })), this.dataSvc.getRecoveredData().pipe(map(result2 => {
+        this.recoveredData = result2;
+      })), this.dataSvc.getDeathsData().pipe(map(result3 => {
+        this.deathsData = result3;
+      }))
+    ).subscribe({
+      complete: () => {
+        Object.keys(this.casesData).forEach(country => {
+          if(country == "\"Korea, South\""){
+            this.country_list1.push({name: "S. Korea", code: "S. Korea"});
+          } else{
+            this.country_list1.push({name: country, code: country});
+          }
+        });
+        this.fetchData('India');
+      }
+    });
   }
 
   updateUI(){
@@ -302,25 +275,23 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   updateStats(){
-    let last_entry = this.app_data[this.app_data.length - 1];
-    let before_last_entry = this.app_data[this.app_data.length - 2];
     this.loading = false;
-    // this.country_name_element.innerHTML = last_entry.country_name;
-    this.displayCountry = last_entry.country_name;
-    this.totalCountryCases = parseInt(last_entry.total_cases.replace(/,/g, ""));
-    this.totalCountryRecovered = parseInt(last_entry.total_recovered.replace(/,/g, ""));
-    this.totalCountryDeaths = parseInt(last_entry.total_deaths.replace(/,/g, ""));
+    this.displayCountry = this.selectedCountry;
+    this.totalCountryCases = this.cases_list[this.cases_list.length - 1];
+    this.totalCountryRecovered = this.recovered_list[this.recovered_list.length - 1];
+    this.totalCountryDeaths = this.deaths_list[this.deaths_list.length - 1];
 
-    if(last_entry.new_cases == ""){
+    this.newCountryCases = this.totalCountryCases - this.cases_list[this.cases_list.length - 2];
+    if(this.newCountryCases < 0){
       this.newCountryCases = 0;
-    } else{
-      this.newCountryCases = parseInt(last_entry.new_cases.replace(/,/g, ""));
     }
-    this.newCountryRecovered = parseInt(last_entry.total_recovered.replace(/,/g, "")) - parseInt(before_last_entry.total_recovered.replace(/,/g, ""));
-    if(last_entry.new_deaths == ""){
+    this.newCountryRecovered = this.totalCountryRecovered - this.recovered_list[this.recovered_list.length - 2];
+    if(this.newCountryRecovered < 0){
+      this.newCountryRecovered = 0;
+    }
+    this.newCountryDeaths = this.totalCountryDeaths - this.deaths_list[this.deaths_list.length - 2];
+    if(this.newCountryDeaths < 0){
       this.newCountryDeaths = 0;
-    } else{
-      this.newCountryDeaths = parseInt(last_entry.new_deaths.replace(/,/g, ""));
     }
 
     let totalCases = new CountUp("totalCases", this.totalCountryCases);
@@ -390,10 +361,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
       const ul: HTMLUListElement = this.renderer.createElement('ul');
       if(index % Math.ceil(num_countries/this.num_ul_lists) == 0){
         ul_list_id = `list${i}`;
-        // this.country_list_element.innerHTML += `<ul id='${ul_list_id}'></ul>`;
-        // ul.id = ul_list_id;
         this.renderer.setProperty(ul, 'id', ul_list_id);
-        this.renderer.appendChild(this.country_list_element.nativeElement, ul)
+        this.renderer.appendChild(this.country_list_element.nativeElement, ul);
         i++;
       }
 
@@ -401,14 +370,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.renderer.setProperty(li, 'id', country.name);
       li.innerHTML = country.name;
       document.getElementById(`${ul_list_id}`).appendChild(li);
-      this.renderer.listen(li, 'click', (evt) => {this.fetchData(country.name)})
-      // document.getElementById(`${ul_list_id}`).innerHTML += `
-      //   <li onclick="fetchData(${country.name})" id="${country.name}">${country.name}</li>
-      // `
+      this.renderer.listen(li, 'click', (evt) => {this.fetchData(country.name)});
     })
   }
 
   fetchData(country){
+    if(country == "S. Korea"){
+      country = "\"Korea, South\""
+    } else if(country == "Taiwan"){
+      country = "Taiwan*";
+    }
     this.countryFilter.nativeElement.value = "";
     this.hideToggle = true;
     console.log(country);    
@@ -420,27 +391,30 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.formatedDates = [];
     this.loading = true;
 
-    this.dataSvc.fetchData(country).then(data => {
-      this.dates = Object.keys(data);
-      this.dates.forEach(date => {
-        let DATA = data[date];
+    this.selectedCountry = country;
 
-        this.formatedDates.push(this.formatDate(date));
-        this.app_data.push(DATA);
-        this.cases_list.push(parseInt(DATA.total_cases.replace(/,/g, "")));
-        this.recovered_list.push(parseInt(DATA.total_recovered.replace(/,/g, "")));
-        this.deaths_list.push(parseInt(DATA.total_deaths.replace(/,/g, "")));
-      })
-    }).then(() => {
-      this.updateUI();
-    }).catch(error => {
-      alert(error);
+    let selectedCasesCountry = this.casesData[country];
+    let selectedRecoveredCountry = this.recoveredData[country];
+    let selectedDeathsCountry = this.deathsData[country];
+
+    selectedCasesCountry.forEach(cs => {
+      this.cases_list.push(cs.cases);
+      this.formatedDates.push(this.formatDate(cs.date));
     });
+
+    selectedRecoveredCountry.forEach(cs => {
+      this.recovered_list.push(cs.recovered);
+    });
+
+    selectedDeathsCountry.forEach(cs => {
+      this.deaths_list.push(cs.deaths);
+    });
+
+    this.updateUI();
     this.resetCountryList();
   }
 
   HideOrDisplay(){
-    // this.search_country_element.classList.toggle("hide");
     this.countryFilter.nativeElement.value = "";
     this.hideToggle = !this.hideToggle;
     this.resetCountryList();

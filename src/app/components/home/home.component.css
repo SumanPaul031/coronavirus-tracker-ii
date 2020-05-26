@@ -24,8 +24,6 @@ header{
     color: #6a149b;
 }
 
-nav{}
-
 nav ul{
     display: flex;
     align-items: center;
